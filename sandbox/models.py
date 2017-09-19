@@ -13,8 +13,8 @@ Your app description
 
 class Constants(BaseConstants):
     name_in_url = 'sandbox'
-    players_per_group = 3
-    num_rounds = 10
+    players_per_group = None
+    num_rounds = 3
 
 
 class Subsession(BaseSubsession):
@@ -22,7 +22,8 @@ class Subsession(BaseSubsession):
 
 
 class Group(BaseGroup):
-    ...
+    def has_dropout(self):
+        return any(p.participant.vars.get('dropout') for p in self.get_players())
 
 
 class Player(BasePlayer):

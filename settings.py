@@ -103,7 +103,7 @@ SESSION_CONFIGS = [
     {
         'name': 'sandbox',
         'display_name': 'sandbox',
-        'num_demo_participants': 3,
+        'num_demo_participants': 1,
         'app_sequence': ['sandbox'],
     }
 ]

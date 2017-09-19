@@ -6,19 +6,13 @@ import random
 
 
 class PlayerBot(Bot):
+    cases = [{'timeout': True}, {'timeout': False}]
+
     def play_round(self):
-        group_has_dropout = any([True for p in self.group.get_players() if p.participant.vars.get('dropout', False)])
-        if group_has_dropout:
-            if self.player.round_number == Constants.num_rounds:
-                yield Submission(views.DeadEnd)
-            else:
-                return
-        else:
-            if random.random() < 0.2:
-                yield Submission(views.MyPage, timeout_happened=True)
-            else:
-                yield Submission(views.MyPage)
-            group_has_dropout = any(
-                [True for p in self.group.get_players() if p.participant.vars.get('dropout', False)])
-            if not group_has_dropout:
-                yield (views.Results)
+        has_dropout = self.group.has_dropout()
+        if has_dropout and self.player.round_number == Constants.num_rounds:
+            yield views.DeadEnd
+        if not has_dropout:
+            yield Submission(views.MyPage, timeout_happened=self.case['timeout'])
+            if not self.group.has_dropout():
+                yield views.Results

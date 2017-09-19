@@ -4,14 +4,12 @@ from ._builtin import Page, WaitPage
 from .models import Constants
 
 
-class NoDropPage(Page):
-    def is_displayed(self):
-        group_has_dropout = any([True for p in self.group.get_players() if p.participant.vars.get('dropout', False)])
-        return not group_has_dropout
 
-
-class MyPage(NoDropPage):
+class MyPage(Page):
     timeout_seconds = 10
+
+    def is_displayed(self):
+        return not self.group.has_dropout()
 
     def before_next_page(self):
         if self.timeout_happened:
@@ -20,22 +18,17 @@ class MyPage(NoDropPage):
 
 class ResultsWaitPage(WaitPage):
     def is_displayed(self):
-        group_has_dropout = any([True for p in self.group.get_players() if p.participant.vars.get('dropout', False)])
-        return not group_has_dropout
-
-def after_all_players_arrive(self):
-        pass
-
-
-class Results(NoDropPage):
-    pass
+        return not self.group.has_dropout()
 
 
 class DeadEnd(Page):
     def is_displayed(self):
-        group_has_dropout = any([True for p in self.group.get_players() if p.participant.vars.get('dropout', False)])
-        return group_has_dropout and self.round_number == Constants.num_rounds
+        return self.group.has_dropout() and self.round_number == Constants.num_rounds
 
+
+class Results(Page):
+    def is_displayed(self):
+        return not self.group.has_dropout()
 
 page_sequence = [
     MyPage,
